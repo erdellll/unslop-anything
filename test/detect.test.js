@@ -394,6 +394,22 @@ test("transition-all stops at the quote that ends a CSS-in-JS value", () => {
   assert.deepStrictEqual(scanSource(singleQuoted, "a.tsx").map((f) => f.rule), ["transition-all"]);
 });
 
+test("transition-all flags a shorthand that names no property, since it defaults to all", () => {
+  const rulesFor = (src, file = "a.css") => scanSource(src, file).map((f) => f.rule);
+  assert.deepStrictEqual(rulesFor(".card {\n  transition: 0.3s ease;\n}\n"), ["transition-all"]);
+  assert.deepStrictEqual(rulesFor(".card { transition: .2s; }\n"), ["transition-all"]);
+  assert.deepStrictEqual(rulesFor(".card { transition: 200ms; }\n"), ["transition-all"]);
+  assert.deepStrictEqual(rulesFor(".card { transition: ease-in-out 200ms; }\n"), ["transition-all"]);
+  assert.deepStrictEqual(rulesFor(".card { transition: cubic-bezier(0.4, 0, 0.2, 1) .3s; }\n"), ["transition-all"]);
+  assert.deepStrictEqual(rulesFor('const s = { transition: "0.3s ease" };\n', "a.tsx"), ["transition-all"]);
+  // A named property, `none`, or a list of named properties stays quiet.
+  assert.deepStrictEqual(rulesFor(".card { transition: opacity .2s ease; }\n"), []);
+  assert.deepStrictEqual(rulesFor(".card { transition: none; }\n"), []);
+  assert.deepStrictEqual(rulesFor(".card { transition: transform 200ms, opacity 200ms; }\n"), []);
+  assert.deepStrictEqual(rulesFor(".card { transition-duration: .3s; }\n"), []);
+  assert.deepStrictEqual(rulesFor('const s = { transition: "opacity .2s", pointerEvents: "all" };\n', "a.tsx"), []);
+});
+
 test("reduced-motion flags animations with no prefers-reduced-motion fallback (issue #72)", () => {
   // The issue's exact repro: a @keyframes animation with no fallback.
   const repro = ".badge { animation: bounce 1s infinite; }\n@keyframes bounce { 50% { transform: translateY(-4px); } }\n";

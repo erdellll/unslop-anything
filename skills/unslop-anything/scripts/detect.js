@@ -960,7 +960,9 @@ const rules = [
       // In a CSS-in-JS value the scan stops at the closing quote, so
       // `pointerEvents: "all"` later in the same style object is not read
       // as part of `transition: "opacity .2s"`.
-      const first = matches(/\btransition-all\b|transition(?:-property)?:\s*["'`]?[^;{}"'`]*?(?<![\w-])all(?![\w-])/, code).next();
+      // A shorthand whose first layer names no property (`transition: .3s
+      // ease`, `transition: ease-in 200ms`) defaults to `all` as well.
+      const first = matches(/\btransition-all\b|transition(?:-property)?:\s*["'`]?[^;{}"'`]*?(?<![\w-])all(?![\w-])|(?<![\w-])transition:\s*["'`]?\s*(?:(?:ease(?:-in-out|-in|-out)?|linear|step-start|step-end|(?:cubic-bezier|steps)\([^)]*\))\s+)?\d*\.?\d+m?s\b/, code).next();
       return first.done ? [] : [first.value.index];
     },
   },
