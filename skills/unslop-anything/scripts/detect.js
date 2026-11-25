@@ -1073,10 +1073,10 @@ const rules = [
       for (const m of matches(/["'`][^"'`\n]*\b(?:focus:)?outline-(?:none|hidden)\b[^"'`\n]*["'`]/, code)) {
         // Focus styles often sit in another string of the same cn(...) call.
         const around = code.slice(Math.max(0, m.index - 400), m.index + m[0].length + 400);
-        // The matched token itself may be `focus:outline-none` (or Tailwind v4's
-        // `focus:outline-hidden`); its `focus:` must not count as the
+        // The removal token itself, with any variants (`focus:outline-none`,
+        // Tailwind v4's `focus-visible:outline-hidden`), must not count as the
         // replacement focus style it is missing.
-        const withoutMatch = around.replace(/\bfocus:outline-(?:none|hidden)\b/g, "");
+        const withoutMatch = around.replace(/(?<![\w:-])(?:[\w-]+:)*outline-(?:none|hidden)\b/g, "");
         if (/\b(?:focus|focus-visible|focus-within|group-focus-visible|peer-focus-visible):|data-\[(?:highlighted|selected|focus|focused)|aria-selected:|data-\[state=/.test(withoutMatch)) continue;
         hits.push(m.index);
       }

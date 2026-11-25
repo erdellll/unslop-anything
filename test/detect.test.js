@@ -879,6 +879,10 @@ test("focus-removed treats Tailwind v4 outline-hidden like outline-none", () => 
   // A replacement focus style keeps it quiet; focus:outline-hidden itself is not one.
   assert.deepStrictEqual(rulesFor('<input className="focus:outline-hidden focus-visible:ring-2" />\n'), []);
   assert.deepStrictEqual(rulesFor('<input className="focus:outline-hidden focus:ring-2" />\n'), []);
+  // A variant on the removal itself is not a replacement focus style.
+  assert.deepStrictEqual(rulesFor('<input className="focus-visible:outline-hidden" />\n'), ["focus-removed"]);
+  assert.deepStrictEqual(rulesFor('<input className="focus-visible:outline-none" />\n'), ["focus-removed"]);
+  assert.deepStrictEqual(rulesFor('<input className="focus-visible:outline-hidden focus-visible:ring-2" />\n'), []);
 });
 
 test("nested-cards ignores dotted subcomponents and ion-card parts, still flags a real nested card", () => {
