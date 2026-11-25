@@ -961,8 +961,9 @@ const rules = [
       // `pointerEvents: "all"` later in the same style object is not read
       // as part of `transition: "opacity .2s"`.
       // A shorthand whose first layer names no property (`transition: .3s
-      // ease`, `transition: ease-in 200ms`) defaults to `all` as well.
-      const first = matches(/\btransition-all\b|transition(?:-property)?:\s*["'`]?[^;{}"'`]*?(?<![\w-])all(?![\w-])|(?<![\w-])transition:\s*["'`]?\s*(?:(?:ease(?:-in-out|-in|-out)?|linear|step-start|step-end|(?:cubic-bezier|steps)\([^)]*\))\s+)?\d*\.?\d+m?s\b/, code).next();
+      // ease`, `transition: ease-in 200ms`) defaults to `all` as well; the
+      // whole layer must be timing values, so `.2s opacity` stays quiet.
+      const first = matches(/\btransition-all\b|transition(?:-property)?:\s*["'`]?[^;{}"'`]*?(?<![\w-])all(?![\w-])|(?<![\w-])transition:\s*["'`]?\s*(?:(?:ease(?:-in-out|-in|-out)?|linear(?:\([^)]*\))?|step-start|step-end|(?:cubic-bezier|steps)\([^)]*\)|allow-discrete|normal)\s+)*\d*\.?\d+m?s\b(?:\s+(?:(?:ease(?:-in-out|-in|-out)?|linear(?:\([^)]*\))?|step-start|step-end|(?:cubic-bezier|steps)\([^)]*\)|allow-discrete|normal)|\d*\.?\d+m?s\b))*\s*(?=[,;}"'`\n]|$)/, code).next();
       return first.done ? [] : [first.value.index];
     },
   },

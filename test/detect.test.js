@@ -408,6 +408,12 @@ test("transition-all flags a shorthand that names no property, since it defaults
   assert.deepStrictEqual(rulesFor(".card { transition: transform 200ms, opacity 200ms; }\n"), []);
   assert.deepStrictEqual(rulesFor(".card { transition-duration: .3s; }\n"), []);
   assert.deepStrictEqual(rulesFor('const s = { transition: "opacity .2s", pointerEvents: "all" };\n', "a.tsx"), []);
+  // A property may come after the duration or timing function, still naming it.
+  assert.deepStrictEqual(rulesFor(".card { transition: .2s opacity; }\n"), []);
+  assert.deepStrictEqual(rulesFor(".card { transition: ease-in 200ms transform; }\n"), []);
+  assert.deepStrictEqual(rulesFor(".card { transition: 200ms ease-out 50ms color, 1s opacity; }\n"), []);
+  // Duration plus delay with no property is still every property.
+  assert.deepStrictEqual(rulesFor(".card { transition: .2s ease 0.1s; }\n"), ["transition-all"]);
 });
 
 test("reduced-motion flags animations with no prefers-reduced-motion fallback (issue #72)", () => {
